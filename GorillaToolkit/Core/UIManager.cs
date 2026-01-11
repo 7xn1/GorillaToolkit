@@ -80,7 +80,7 @@ public class UIManager : MonoBehaviour {
             transform.up * 0.20f;
         transform.LookAt(GorillaTagger.Instance.headCollider.transform.position);
 
-        bool input = ControllerInputPoller.instance.leftControllerSecondaryButton;
+        bool input = ControllerInputPoller.instance.leftGrab;
         if (input && !wasOpen) {
             open = !open;
             StartCoroutine(open ? OpenUI() : CloseUI());
@@ -131,7 +131,8 @@ public class UIManager : MonoBehaviour {
     }
     
     private IEnumerator OpenUI() {
-        gameObject.SetActive(true);
+        canvas!.gameObject.SetActive(true);
+        colliders!.gameObject.SetActive(true);
         transform.localScale = Vector3.zero;
 
         float startTime = Time.time;
@@ -164,6 +165,7 @@ public class UIManager : MonoBehaviour {
         }
 
         transform.localScale = Vector3.zero;
-        gameObject.SetActive(false);
+        canvas!.gameObject.SetActive(false);
+        colliders!.gameObject.SetActive(false);
     }
 }
