@@ -1,0 +1,59 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\meiss\\source\\repos\\GorillaToolkit\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{6D7B89EE-E1AB-4099-B525-5A38CF3D72F9}|GorillaToolkit\\GorillaToolkit.csproj|c:\\users\\meiss\\source\\repos\\gorillatoolkit\\gorillatoolkit\\plugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{6D7B89EE-E1AB-4099-B525-5A38CF3D72F9}|GorillaToolkit\\GorillaToolkit.csproj|solutionrelative:gorillatoolkit\\plugin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 1,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedHeight": 274,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{3ae79031-e1bc-11d0-8f78-00a0c9110057}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "Plugin.cs",
+              "DocumentMoniker": "C:\\Users\\meiss\\source\\repos\\GorillaToolkit\\GorillaToolkit\\Plugin.cs",
+              "RelativeDocumentMoniker": "GorillaToolkit\\Plugin.cs",
+              "ToolTip": "C:\\Users\\meiss\\source\\repos\\GorillaToolkit\\GorillaToolkit\\Plugin.cs",
+              "RelativeToolTip": "GorillaToolkit\\Plugin.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAADwvwAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-01-10T06:07:39.702Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{34e76e81-ee4a-11d0-ae2e-00a0c90fffc3}"
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{cce594b6-0c39-4442-ba28-10c64ac7e89f}"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 126,
+          "SelectedChildIndex": -1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
