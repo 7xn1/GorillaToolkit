@@ -2,6 +2,7 @@ using System.Collections;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
+using Valve.VR;
 using Vector3 = UnityEngine.Vector3;
 
 // ReSharper disable InconsistentNaming
@@ -36,7 +37,6 @@ public class UIManager : MonoBehaviour {
     private void Awake() {
         Instance = this;
         
-        transform.localEulerAngles = new Vector3(30f, -90f, 90.00f);
         transform.localScale = new Vector3(0.20f, 0.20f, 0.20f);
         
         canvas = transform.Find("Canvas").GetComponent<Canvas>();
@@ -77,10 +77,10 @@ public class UIManager : MonoBehaviour {
         transform.position = GetLeftHandPosition();
         transform.position += 
             transform.forward * 0.15f +
-            transform.up * 0.20f;
+            transform.up * 0.12f;
         transform.LookAt(GorillaTagger.Instance.headCollider.transform.position);
 
-        bool input = ControllerInputPoller.instance.leftGrab;
+        bool input = SteamVR_Actions.gorillaTag_LeftJoystickClick.state;
         if (input && !wasOpen) {
             open = !open;
             StartCoroutine(open ? OpenUI() : CloseUI());

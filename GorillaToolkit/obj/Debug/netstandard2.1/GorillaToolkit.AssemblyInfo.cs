@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GorillaToolkit")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f716731549a7eed1a161e9b6730c6d6c933332f4")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d5d8927321191605f0465e7ca30cd2fb718dc46b")]
 [assembly: System.Reflection.AssemblyProductAttribute("GorillaToolkit")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GorillaToolkit")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
