@@ -12,13 +12,15 @@ namespace GorillaToolkit {
     public class Plugin : BaseUnityPlugin {
         public static Plugin? Instance; // Just in case [I used it later on :)].
 
-        public static AudioClip? ClickSound;
-        private static AudioSource? audioSource;
-        public static void PlaySound(AudioClip clip) => audioSource?.PlayOneShot(clip);
+        public AssetBundle? assetBundle;
+        
+        private static AudioClip? ClickSound;
+        private static AudioSource? AudioSource;
+        public static void PlayHitSound() => AudioSource?.PlayOneShot(ClickSound);
         
         private void Start() {
             Instance = this;
-            
+
             gameObject.AddComponent<MediaManager>();
             gameObject.AddComponent<ControllerManager>();
 
@@ -28,10 +30,10 @@ namespace GorillaToolkit {
         private void OnGameInitialized() {
             using Stream? stream = Assembly.GetExecutingAssembly()
                 .GetManifestResourceStream("GorillaToolkit.Resources.kit");
-            AssetBundle assetBundle = AssetBundle.LoadFromStream(stream);
+            assetBundle = AssetBundle.LoadFromStream(stream);
 
-            audioSource = new GameObject("ToolkitSource").AddComponent<AudioSource>();
-            audioSource.spatialBlend = 0f; audioSource.playOnAwake = false;
+            AudioSource = new GameObject("ToolkitSource").AddComponent<AudioSource>();
+            AudioSource.spatialBlend = 0f; AudioSource.playOnAwake = false;
             ClickSound = assetBundle.LoadAsset<AudioClip>("click");
             
             GameObject toolKitUI = Instantiate(assetBundle.LoadAsset<GameObject>("UI"));

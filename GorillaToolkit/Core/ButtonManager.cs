@@ -29,8 +29,7 @@ public class ButtonManager : MonoBehaviour {
             GorillaTagger.Instance.tapHapticDuration
         );
 
-        if (Plugin.ClickSound != null) 
-            Plugin.PlaySound(Plugin.ClickSound);
+        Plugin.PlayHitSound();
 
         Click?.Invoke();
     }

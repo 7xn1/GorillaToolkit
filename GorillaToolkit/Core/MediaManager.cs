@@ -11,6 +11,8 @@ namespace GorillaToolkit.Core;
 public class MediaManager : MonoBehaviour {
     public static string Title { get; private set; } = "Unknown";
     public static string Artist { get; private set; } = "Unknown";
+    public static bool Paused { get; private set; } = true;
+    
     public static bool ValidData;
 
     private static string? QuickSongPath { get; set; }
@@ -68,11 +70,13 @@ public class MediaManager : MonoBehaviour {
         ValidData = false;
         Title = "Unknown";
         Artist = "Unknown";
+        Paused = true;
 
         try {
             Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>>(output);
             Title = (string)data["Title"];
             Artist = (string)data["Artist"];
+            Paused = (string)data["Status"] != "Playing";
             ValidData = true;
         }
         catch {
@@ -97,7 +101,10 @@ public class MediaManager : MonoBehaviour {
         SendKey(VirtualKeyCodes.PreviousTrack);
     }
 
-    public void PauseTrack() => SendKey(VirtualKeyCodes.PlayPause);
+    public void PauseTrack() {
+        Paused = !Paused;
+        SendKey(VirtualKeyCodes.PlayPause);
+    }
 
     public void SkipTrack() {
         Instance!.StartCoroutine(UpdateDataCoroutine(0.1f));

@@ -2,8 +2,11 @@ using System.Collections;
 using Photon.Pun;
 using TMPro;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.UI;
 using Valve.VR;
 using Vector3 = UnityEngine.Vector3;
+// ReSharper disable Unity.PerformanceCriticalCodeInvocation
 
 // ReSharper disable InconsistentNaming
 
@@ -23,6 +26,7 @@ public class UIManager : MonoBehaviour {
     private Transform? baseT;
     private Transform? mediaT;
     private Transform? controllerT;
+    private Transform? colorT;
     
     private TextMeshProUGUI? leftPercentage;
     private TextMeshProUGUI? rightPercentage;
@@ -33,6 +37,22 @@ public class UIManager : MonoBehaviour {
 
     private TextMeshProUGUI? songName;
     private TextMeshProUGUI? songArtist;
+
+    public Texture2D? pauseTexture;
+    public Texture2D? playTexture;
+    
+    // Prolly going to redo color system at some point, just made it so you can swap for now :)
+    
+    private readonly Color32[] colors = [
+        new(255, 0, 0, 255),
+        new(255, 105, 0, 255),
+        new(230, 255, 0, 255),
+        new(0, 255, 10, 255), 
+        new(0, 140, 255, 255),
+        new(160, 0, 255, 255), 
+        new(255, 0, 230, 255)
+    ];
+    private int colorIndex = 0;
     
     private void Awake() {
         Instance = this;
@@ -45,6 +65,7 @@ public class UIManager : MonoBehaviour {
         baseT = canvas.transform.Find("Base");
         mediaT = canvas.transform.Find("Media");
         controllerT = canvas.transform.Find("Controllers");
+        colorT = canvas.transform.Find("ColorChanger");
         
         time = baseT.transform.Find("Time").GetComponent<TextMeshProUGUI>();
         date = baseT.transform.Find("Date").GetComponent<TextMeshProUGUI>();
@@ -56,7 +77,13 @@ public class UIManager : MonoBehaviour {
         leftPercentage = controllerT.transform.Find("LeftHand/Percentage").GetComponent<TextMeshProUGUI>();
         rightPercentage = controllerT.transform.Find("RightHand/Percentage").GetComponent<TextMeshProUGUI>();
 
+        pauseTexture = Plugin.Instance?.assetBundle?
+            .LoadAsset<Texture2D>("Pause");
+        playTexture = Plugin.Instance?.assetBundle?
+            .LoadAsset<Texture2D>("Play");
+        
         TriggerButtons();
+        LoadColor();
         
         canvas.gameObject.SetActive(false);
         colliders.gameObject.SetActive(false);
@@ -78,16 +105,25 @@ public class UIManager : MonoBehaviour {
         transform.position += 
             transform.forward * 0.15f +
             transform.up * 0.12f;
-        transform.LookAt(GorillaTagger.Instance.headCollider.transform.position);
-
+        
+        Quaternion targetRotation = Quaternion.LookRotation(GorillaTagger.Instance.headCollider.transform.position - transform.position);
+        transform.rotation = Quaternion.Slerp(
+            transform.rotation, 
+            targetRotation, 
+            0.10f
+        );
+        
         bool input = SteamVR_Actions.gorillaTag_LeftJoystickClick.state;
         if (input && !wasOpen) {
             open = !open;
             StartCoroutine(open ? OpenUI() : CloseUI());
         }
         wasOpen = input;
-        
-        if (open) Runtime();
+
+        if (open) {
+            Runtime();
+            UpdatePlayPause();
+        }
     }
     
     // ReSharper disable Unity.PerformanceAnalysis
@@ -104,8 +140,8 @@ public class UIManager : MonoBehaviour {
         ControllerManager? instance = ControllerManager.Instance;
         if (instance == null) return;
         
-        var rightHand = controllerT?.Find("RightHand").gameObject;
-        var leftHand = controllerT?.Find("LeftHand").gameObject;
+        GameObject? rightHand = controllerT?.Find("RightHand").gameObject;
+        GameObject? leftHand = controllerT?.Find("LeftHand").gameObject;
         
         leftHand?.SetActive(instance.leftControllerBattery > 0.00f);
         rightHand?.SetActive(instance.rightControllerBattery > 0.00f);
@@ -128,7 +164,50 @@ public class UIManager : MonoBehaviour {
         colliders.Find("Skip")
             .AddComponent<ButtonManager>().Click = 
             () => MediaManager.Instance!.SkipTrack();
+        
+        colliders.Find("Color")
+                .AddComponent<ButtonManager>().Click = 
+                ChangeColor;
     }
+
+    // region because I HATE looking at the color methods.
+    
+    #region | Color Methods |
+
+    private void SetColor(Image? img, Color color) {
+        if (img != null) img.color = color;
+    }
+
+    private void ChangeColor() {
+        colorIndex = (colorIndex + 1) % colors.Length;
+        ApplyColor();
+        PlayerPrefs.SetInt("GorillaToolkit_ColorIndex", colorIndex);
+        PlayerPrefs.Save();
+    }
+
+    private void ApplyColor() {
+        Color color = colorIndex == 6 
+            ? new Color(0.1694782f, 0.1504984f, 0.3584906f)
+            : colors[colorIndex];
+        
+        Color secondaryColor = colorIndex == 6 
+            ? new Color(0.03906193f, 0.0252314f, 0.1981132f)
+            : color;
+
+        SetColor(baseT?.GetComponent<Image>(), color);
+        SetColor(colorT?.GetComponent<Image>(), color);
+        SetColor(controllerT?.Find("LeftHand").GetComponent<Image>(), color);
+        SetColor(controllerT?.Find("RightHand").GetComponent<Image>(), color);
+        
+        SetColor(mediaT?.GetComponent<Image>(), secondaryColor);
+    }
+
+    private void LoadColor() {
+        colorIndex = PlayerPrefs.GetInt("GorillaToolkit_ColorIndex", 0);
+        ApplyColor();
+    }
+
+    #endregion 
     
     private IEnumerator OpenUI() {
         canvas!.gameObject.SetActive(true);
@@ -167,5 +246,21 @@ public class UIManager : MonoBehaviour {
         transform.localScale = Vector3.zero;
         canvas!.gameObject.SetActive(false);
         colliders!.gameObject.SetActive(false);
+    }
+    
+    private void UpdatePlayPause() {
+        Image? playPauseButton = mediaT?.transform.Find("PlayPause").GetComponent<Image>();
+        if (playPauseButton && pauseTexture && playTexture) {
+            bool playing = MediaManager.Paused;
+        
+            Sprite sprite = Sprite.Create(
+                playing ? playTexture : pauseTexture,
+                new Rect(0, 0, playing ? playTexture.width : pauseTexture.width, 
+                    playing ? playTexture.height : pauseTexture.height),
+                new Vector2(0.5f, 0.5f)
+            );
+        
+            playPauseButton.sprite = sprite;
+        }
     }
 }
