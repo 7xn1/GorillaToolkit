@@ -1,10 +1,10 @@
 using UnityEngine;
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
 
 namespace GorillaToolkit.Core;
 
 public class ButtonManager : MonoBehaviour {
     private float _lastTime;
-
     public Action? Click;
 
     public void Awake() {
@@ -19,9 +19,10 @@ public class ButtonManager : MonoBehaviour {
         if (!enabled ||
             !(Time.realtimeSinceStartup > _lastTime) ||
             !collider.TryGetComponent(out GorillaTriggerColliderHandIndicator handIndicator) || 
-            collider.name != "RightHandTriggerCollider") return;
+            collider.name != (UIManager.Instance.leftHand ? "RightHandTriggerCollider" : "LeftHandTriggerCollider")) 
+            return;
         
-        _lastTime = Time.realtimeSinceStartup + 0.25f;
+        _lastTime = Time.realtimeSinceStartup + 0.250f;
 
         GorillaTagger.Instance.StartVibration(
             handIndicator.isLeftHand,
@@ -30,7 +31,6 @@ public class ButtonManager : MonoBehaviour {
         );
 
         Plugin.PlayHitSound();
-
         Click?.Invoke();
     }
 }

@@ -38,9 +38,11 @@ public class MediaManager : MonoBehaviour {
         if (File.Exists(QuickSongPath))
             File.Delete(QuickSongPath);
 
-        using Stream? stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("GorillaToolkit.Resources.QuickSong.exe");
+        using Stream? stream = Assembly
+            .GetExecutingAssembly()
+            .GetManifestResourceStream("GorillaToolkit.Resources.QuickSong.exe");
         using FileStream fs = new FileStream(QuickSongPath, FileMode.Create, FileAccess.Write);
-        stream!.CopyTo(fs);
+        stream?.CopyTo(fs);
     }
 
     public void Update() {
@@ -61,10 +63,10 @@ public class MediaManager : MonoBehaviour {
             CreateNoWindow = true
         };
 
-        using var proc = new Process();
-        proc.StartInfo = psi;
+        using Process proc = new Process { StartInfo = psi };
         proc.Start();
-        var output = await proc.StandardOutput.ReadToEndAsync();
+        string output = await proc.StandardOutput.ReadToEndAsync();
+
         await Task.Run(() => proc.WaitForExit());
 
         ValidData = false;

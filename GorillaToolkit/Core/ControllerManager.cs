@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.XR;
 using Valve.VR;
 // ReSharper disable SuggestVarOrType_BuiltInTypes
 // ReSharper disable InconsistentNaming
@@ -11,35 +10,72 @@ public class ControllerManager : MonoBehaviour {
     
     public float leftControllerBattery;
     public float rightControllerBattery;
+    public float headsetBattery;
     
-    private void Awake()
-        => Instance = this;
+    private bool openVRInitialized;
     
-    private void Update() {
-        if (XRSettings.isDeviceActive) {
-            leftControllerBattery = GetBattery(ETrackedControllerRole.LeftHand);
-            rightControllerBattery = GetBattery(ETrackedControllerRole.RightHand);   
-        } else {
-            leftControllerBattery = 0.00f;
-            rightControllerBattery = 0.00f;
-        }
+    private void Awake() {
+        Instance = this;
+        
+        try {
+            openVRInitialized = OpenVR.System != null;
+        } catch { openVRInitialized = false; }
     }
     
-    // This took me so long to figure out :[
-    private float GetBattery(ETrackedControllerRole role) {
-        uint deviceIndex = OpenVR.System.GetTrackedDeviceIndexForControllerRole(role);
+    private void Update() {
+        if (!openVRInitialized) return;
         
-        if (deviceIndex == OpenVR.k_unTrackedDeviceIndexInvalid)
+        leftControllerBattery = GetControllerBattery(ETrackedControllerRole.LeftHand);
+        rightControllerBattery = GetControllerBattery(ETrackedControllerRole.RightHand);
+        headsetBattery = GetHeadsetBattery();
+    }
+    
+    private float GetControllerBattery(ETrackedControllerRole role) {
+        if (!openVRInitialized || OpenVR.System == null) return 0f;
+        
+        try {
+            uint deviceIndex = OpenVR.System.GetTrackedDeviceIndexForControllerRole(role);
+            
+            if (deviceIndex == OpenVR.k_unTrackedDeviceIndexInvalid) return 0f;
+            if (!OpenVR.System.IsTrackedDeviceConnected(deviceIndex)) return 0f;
+            
+            var error = ETrackedPropertyError.TrackedProp_Success;
+            
+            float level = OpenVR.System.GetFloatTrackedDeviceProperty(
+                deviceIndex,
+                ETrackedDeviceProperty.Prop_DeviceBatteryPercentage_Float,
+                ref error
+            );
+            
+            if (error != ETrackedPropertyError.TrackedProp_Success) return 0f;
+            
+            return level;
+        } catch {
             return 0f;
+        }
+    }
+
+    private float GetHeadsetBattery() {
+        if (!openVRInitialized || OpenVR.System == null) return 0f;
         
-        var error = ETrackedPropertyError.TrackedProp_Success;
+        try {
+            uint hmd = OpenVR.k_unTrackedDeviceIndex_Hmd;
         
-        float level = OpenVR.System.GetFloatTrackedDeviceProperty(
-            deviceIndex,
-            ETrackedDeviceProperty.Prop_DeviceBatteryPercentage_Float,
-            ref error
-        );
+            if (!OpenVR.System.IsTrackedDeviceConnected(hmd)) return 0f;
         
-        return level;
+            var error = ETrackedPropertyError.TrackedProp_Success;
+            
+            float level = OpenVR.System.GetFloatTrackedDeviceProperty(
+                hmd,
+                ETrackedDeviceProperty.Prop_DeviceBatteryPercentage_Float,
+                ref error
+            );
+            
+            if (error != ETrackedPropertyError.TrackedProp_Success) return 0f;
+        
+            return level;
+        } catch {
+            return 0f;
+        }
     }
 }

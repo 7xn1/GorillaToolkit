@@ -3,6 +3,7 @@ using BepInEx;
 using GorillaToolkit.Core;
 using TMPro;
 using UnityEngine;
+
 // ReSharper disable SuggestVarOrType_SimpleTypes
 // ReSharper disable InconsistentNaming
 // ReSharper disable ShaderLabShaderReferenceNotResolved
@@ -10,7 +11,7 @@ using UnityEngine;
 namespace GorillaToolkit { 
     [BepInPlugin(Constants.PluginGuid, Constants.PluginName, Constants.PluginVersion)]
     public class Plugin : BaseUnityPlugin {
-        public static Plugin? Instance; // Just in case [I used it later on :)].
+        public static Plugin? Instance;
 
         public AssetBundle? assetBundle;
         
@@ -36,7 +37,9 @@ namespace GorillaToolkit {
             AudioSource.spatialBlend = 0f; AudioSource.playOnAwake = false;
             ClickSound = assetBundle.LoadAsset<AudioClip>("click");
             
-            GameObject toolKitUI = Instantiate(assetBundle.LoadAsset<GameObject>("UI"));
+            GameObject toolKitUI = Instantiate(
+                assetBundle.LoadAsset<GameObject>("UI")
+            );
             toolKitUI.AddComponent<UIManager>();
             FixShaders(toolKitUI);
         }   

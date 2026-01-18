@@ -706,10 +706,12 @@
     <EmbeddedResource Include="Resources\kit" />
     <None Remove="Resources\QuickSong.exe" />
     <EmbeddedResource Include="Resources\QuickSong.exe" />
+    <None Remove="Resources\QuickPad.exe" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.SDK.Contracts" Version="10.0.28000.1-RTM" />
+    <PackageReference Include="SoundpadConnector" Version="1.2.2" />
   </ItemGroup>
 
 </Project>
