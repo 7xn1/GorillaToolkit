@@ -173,7 +173,7 @@ public class UIManager : MonoBehaviour {
         }
         wasOpen = input;
         
-        DevelopmentShit();
+        // DevelopmentShit();
         
         if (!open) return;
         
